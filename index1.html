@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GORF Website</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font and smooth transitions */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Dropdown specific styles */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 10;
+            border-radius: 0.75rem; /* rounded-lg */
+            margin-top: 0.5rem; /* mt-2 */
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #374151; /* text-gray-800 */
+            padding: 0.5rem 1rem; /* py-2 px-4 */
+            text-decoration: none;
+            display: block;
+            border-radius: 0.75rem; /* rounded-lg */
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ede9fe; /* hover:bg-purple-100 */
+        }
+
+        /* Hide content sections by default */
+        .content-section {
+            display: none;
+        }
+
+        /* Show active content section */
+        .content-section.active {
+            display: block;
+        }
+
+        /* Search icon positioning */
+        .search-bar .search-icon {
+            position: absolute;
+            left: 0.75rem; /* pl-3 */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280; /* text-gray-500 */
+        }
+
+        /* Message box styles */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .message-box.show {
+            opacity: 1;
+        }
+
+        /* Loading overlay styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            font-size: 1.5rem;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <div id="loading-overlay" class="loading-overlay">
+        Loading data...
+    </div>
+
+    <div id="message-box" class="message-box"></div>
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-purple-600 to-indigo-800 text-white py-4 md:py-8 shadow-lg rounded-b-3xl">
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-wider text-center mb-2 md:mb-4">GORF</h1>
+        <div class="navbar mb-2 md:mb-4">
+            <nav class="flex justify-center">
+                <ul class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8">
+                    <li><a href="#" class="nav-link text-white text-base md:text-lg font-semibold hover:text-purple-200 transition-colors duration-300 py-1 px-2 md:py-2 md:px-4 rounded-lg" data-target="home-content">Home</a></li>
+                    <li class="dropdown relative">
+                        <a href="#" class="nav-link text-white text-base md:text-lg font-semibold hover:text-purple-200 transition-colors duration-300 py-1 px-2 md:py-2 md:px-4 rounded-lg">Categories</a>
+                        <div class="dropdown-content">
+                            <a href="#" class="nav-link category-link" data-category="all">All Categories</a>
+                            <a href="#" class="nav-link category-link" data-category="living-room">Living Room</a>
+                            <a href="#" class="nav-link category-link" data-category="bedroom">Bedroom</a>
+                            <a href="#" class="nav-link category-link" data-category="dining-room">Dining Room</a>
+                            <a href="#" class="nav-link category-link" data-category="office">Office</a>
+                            <a href="#" class="nav-link category-link" data-category="outdoor">Outdoor</a>
+                            <a href="#" class="nav-link category-link" data-category="other">Other</a>
+                        </div>
+                    </li>
+                    <li><a href="#" class="nav-link text-white text-base md:text-lg font-semibold hover:text-purple-200 transition-colors duration-300 py-1 px-2 md:py-2 md:px-4 rounded-lg" data-target="upload-furniture-content">Upload Furniture</a></li>
+                    <li><a href="#" class="nav-link text-white text-base md:text-lg font-semibold hover:text-purple-200 transition-colors duration-300 py-1 px-2 md:py-2 md:px-4 rounded-lg" data-target="purchases-transactions-content">Purchases & Transactions</a></li>
+                    <li><a href="#" class="nav-link text-white text-base md:text-lg font-semibold hover:text-purple-200 transition-colors duration-300 py-1 px-2 md:py-2 md:px-4 rounded-lg" data-target="settings-content">Settings</a></li> <li><a href="#" class="nav-link text-white text-base md:text-lg font-semibold hover:text-purple-200 transition-colors duration-300 py-1 px-2 md:py-2 md:px-4 rounded-lg" data-target="contact-content">Contact Us</a></li>
+                    <li><a href="#" class="nav-link text-white text-base md:text-lg font-semibold hover:text-purple-200 transition-colors duration-300 py-1 px-2 md:py-2 md:px-4 rounded-lg" data-target="latest-content">Latest</a></li>
+                    <li><a href="#" class="nav-link text-white text-base md:text-lg font-semibold hover:text-purple-200 transition-colors duration-300 py-1 px-2 md:py-2 md:px-4 rounded-lg" data-target="requests-content">Requests</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="container w-full flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-4 px-4">
+            <button id="browse-button" class="browse-button bg-purple-600 text-white px-4 py-2 rounded-full font-bold shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 text-sm md:text-base">Browse</button>
+            <div class="search-bar relative flex-grow w-full md:w-auto md:max-w-md">
+                <input type="text" id="search-input" placeholder="Search..." class="w-full py-2 px-4 pl-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-800 text-sm md:text-base">
+                <span class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-48 md:pt-64">
+        <section id="home-content" class="content-section active bg-white shadow-md rounded-xl p-4 md:p-6 my-4 md:my-8 max-w-6xl mx-auto px-4 py-8">
+            <div class="container w-full">
+                <h3 id="home-section-title" class="text-lg md:text-xl font-semibold text-gray-700 mb-2 md:mb-4 text-center">Recently added</h3>
+                <div class="flex justify-center mb-4 md:mb-8">
+                    <button id="upload-item-home-button" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 text-sm md:text-base">Upload Your Item</button>
+                </div>
+                <div id="home-items-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-4 md:mt-8 w-full">
+                    </div>
+            </div>
+        </section>
+
+        <section id="upload-furniture-content" class="content-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-6xl mx-auto px-4 py-8">
+            <div class="container">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6 text-center">Upload Your Furniture</h2>
+                <form id="upload-furniture-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div class="form-group flex flex-col md:col-span-2">
+                        <label for="furniture-image" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Furniture Image</label>
+                        <input type="file" id="furniture-image" name="furniture-image" accept="image/*" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label for="furniture-name" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Furniture Name</label>
+                        <input type="text" id="furniture-name" name="furniture-name" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label for="furniture-price" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Price ($)</label>
+                        <input type="number" id="furniture-price" name="furniture-price" min="0" step="0.01" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col md:col-span-2">
+                        <label for="furniture-category" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Category</label>
+                        <select id="furniture-category" name="furniture-category" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                            <option value="">Select a Category</option>
+                            <option value="living-room">Living Room</option>
+                            <option value="bedroom">Bedroom</option>
+                            <option value="dining-room">Dining Room</option>
+                            <option value="office">Office</option>
+                            <option value="outdoor">Outdoor</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group flex flex-col md:col-span-2">
+                        <label for="furniture-description" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Description</label>
+                        <textarea id="furniture-description" name="furniture-description" rows="3" class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full resize-y text-sm md:text-base"></textarea>
+                    </div>
+                    <div class="form-group flex flex-col md:col-span-2">
+                        <label class="text-gray-700 font-semibold mb-2 text-sm md:text-base">Preferred Payment Method</label>
+                        <div class="flex flex-wrap gap-2 md:gap-4">
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="payment-method" value="credit-card" class="form-radio text-purple-600" checked>
+                                <span class="ml-1 md:ml-2 text-gray-700">Credit Card</span>
+                            </label>
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="payment-method" value="paypal" class="form-radio text-purple-600">
+                                <span class="ml-1 md:ml-2 text-gray-700">PayPal</span>
+                            </label>
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="payment-method" value="bank-transfer" class="form-radio text-purple-600">
+                                <span class="ml-1 md:ml-2 text-gray-700">Bank Transfer</span>
+                            </label>
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="payment-method" value="g-cash" class="form-radio text-purple-600">
+                                <span class="ml-1 md:ml-2 text-gray-700">G-Cash</span>
+                            </label>
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="payment-method" value="cash-on-delivery" class="form-radio text-purple-600">
+                                <span class="ml-1 md:ml-2 text-gray-700">Cash on Delivery</span>
+                            </label>
+                        </div>
+                        <p class="text-xs md:text-sm text-gray-500 mt-1 md:mt-2">Note: This is a placeholder for payment method selection. Actual processing will be handled securely offline.</p>
+                    </div>
+                    <button type="submit" id="upload-furniture-button" class="md:col-span-2 bg-purple-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 mt-2 md:mt-4 mx-auto block text-sm md:text-base">Upload Furniture</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="item-details-content" class="content-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-4xl mx-auto">
+            <div class="container">
+                <h2 id="detail-item-name" class="text-2xl md:text-3xl font-bold text-gray-800 mb-2 md:mb-4 text-center"></h2>
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8">
+                    <div class="md:w-1/2">
+                        <img id="detail-item-image" src="" alt="Item Image" class="w-full h-40 md:h-48 object-cover" loading="lazy">
+                    </div>
+                    <div class="md:w-1/2">
+                        <p class="text-gray-600 text-base md:text-lg mb-1 md:mb-2">Price: <span id="detail-item-price" class="text-purple-700 font-bold text-xl md:text-2xl"></span></p>
+                        <p class="text-gray-700 text-sm md:text-base mb-2 md:mb-4"><span class="font-semibold">Description:</span> <span id="detail-item-description"></span></p>
+                        <p class="text-gray-700 text-sm md:text-base mb-1 md:mb-2"><span class="font-semibold">Category:</span> <span id="detail-item-category" class="capitalize"></span></p>
+                        <p class="text-gray-700 text-sm md:text-base mb-1 md:mb-2"><span class="font-semibold">Date Added:</span> <span id="detail-item-date"></span></p>
+                        <p class="text-gray-700 text-sm md:text-base mb-2 md:mb-4"><span class="font-semibold">Payment Method:</span> <span id="detail-item-payment-method" class="capitalize"></span></p>
+                        <p class="text-gray-700 text-sm md:text-base mb-1 md:mb-2"><span class="font-semibold">Times Sold:</span> <span id="detail-item-times-sold"></span></p>
+                        <p class="text-gray-700 text-sm md:text-base mb-2 md:mb-4"><span class="font-semibold">Average Rating:</span> <span id="detail-item-rating"></span></p>
+                        <button id="buy-now-button" class="bg-green-600 text-white px-4 py-2 rounded-full font-bold shadow-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 w-full md:w-auto text-sm md:text-base">Buy Now</button>
+                        <button id="back-to-home-button" class="bg-gray-400 text-white px-4 py-2 rounded-full font-bold shadow-lg hover:bg-gray-500 transition-all duration-300 transform hover:scale-105 w-full md:w-auto mt-2 md:mt-4 text-sm md:text-base">Back to Home</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="checkout-content" class="content-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-xl mx-auto">
+            <div class="container">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6 text-center">Checkout</h2>
+                <div class="mb-4 md:mb-6 border-b pb-2 md:pb-4">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Order Summary</h3>
+                    <div class="flex items-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <img id="checkout-item-image" src="" alt="Item Image" class="w-20 h-20 md:w-24 md:h-24 object-cover" loading="lazy">
+                        <div>
+                            <p id="checkout-item-name" class="font-bold text-base md:text-lg text-gray-800"></p>
+                            <p id="checkout-item-price" class="text-purple-700 font-bold text-lg md:text-xl"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="checkout-form" class="grid grid-cols-1 gap-4 md:gap-6">
+                    <div class="form-group flex flex-col">
+                        <label class="text-gray-700 font-semibold mb-1 md:mb-2 text-sm md:text-base">Choose Payment Method</label>
+                        <div class="flex flex-wrap gap-2 md:gap-4">
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="checkout-payment-method" value="credit-card" class="form-radio text-purple-600" checked>
+                                <span class="ml-1 md:ml-2 text-gray-700">Credit Card</span>
+                            </label>
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="checkout-payment-method" value="paypal" class="form-radio text-purple-600">
+                                <span class="ml-1 md:ml-2 text-gray-700">PayPal</span>
+                            </label>
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="checkout-payment-method" value="bank-transfer" class="form-radio text-purple-600">
+                                <span class="ml-1 md:ml-2 text-gray-700">Bank Transfer</span>
+                            </label>
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="checkout-payment-method" value="g-cash" class="form-radio text-purple-600">
+                                <span class="ml-1 md:ml-2 text-gray-700">G-Cash</span>
+                            </label>
+                            <label class="inline-flex items-center text-sm md:text-base">
+                                <input type="radio" name="checkout-payment-method" value="cash-on-delivery" class="form-radio text-purple-600">
+                                <span class="ml-1 md:ml-2 text-gray-700">Cash on Delivery</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label for="street-address" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Street Address</label>
+                        <input type="text" id="street-address" name="street-address" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label for="city" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">City</label>
+                        <input type="text" id="city" name="city" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label for="state-province" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">State/Province</label>
+                        <input type="text" id="state-province" name="state-province" class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label for="zip-code" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Zip Code</label>
+                        <input type="text" id="zip-code" name="zip-code" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col md:col-span-2">
+                        <label for="buyer-message" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Message for Seller (Optional)</label>
+                        <textarea id="buyer-message" name="buyer-message" rows="3" class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full resize-y text-sm md:text-base" placeholder="e.g., Delivery instructions, preferred contact time..."></textarea>
+                    </div>
+                    <button type="submit" id="confirm-purchase-button" class="md:col-span-2 bg-green-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 mt-2 md:mt-4 mx-auto block text-sm md:text-base">Confirm Purchase</button>
+                    <button type="button" id="back-to-details-button" class="bg-gray-400 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-gray-500 transition-all duration-300 transform hover:scale-105 mt-2 mx-auto block text-sm md:text-base">Back to Item Details</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="receipt-content" class="content-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-xl mx-auto">
+            <div class="container">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6 text-center">Purchase Receipt</h2>
+                <div class="mb-4 md:mb-6 border-b pb-2 md:pb-4">
+                    <p class="text-gray-700 text-sm md:text-base mb-1 md:mb-2"><strong>Transaction ID:</strong> <span id="receipt-transaction-id"></span></p>
+                    <p class="text-gray-700 text-sm md:text-base mb-1 md:mb-2"><strong>Date:</strong> <span id="receipt-date"></span></p>
+                </div>
+
+                <div class="mb-4 md:mb-6 border-b pb-2 md:pb-4">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Item Details</h3>
+                    <div class="flex items-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <img id="receipt-item-image"  alt="Item Image" class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg shadow-sm" loading="lazy">
+                        <div>
+                            <p id="receipt-item-name" class="font-bold text-base md:text-lg text-gray-800"></p>
+                            <p id="receipt-item-price" class="text-purple-700 font-bold text-lg md:text-xl"></p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 text-sm md:text-base mb-1 md:mb-2"><strong>Category:</strong> <span id="receipt-item-category" class="capitalize"></span></p>
+                </div>
+
+                <div class="mb-4 md:mb-6">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Delivery Address</h3>
+                    <p id="receipt-street-address" class="text-gray-700 text-sm md:text-base"></p>
+                    <p id="receipt-city-state-zip" class="text-gray-700 text-sm md:text-base"></p>
+                </div>
+
+                <div class="mb-4 md:mb-6">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Payment Information</h3>
+                    <p class="text-gray-700 text-sm md:text-base mb-1 md:mb-2"><strong>Method:</strong> <span id="receipt-payment-method" class="capitalize"></span></p>
+                    <p class="text-gray-700 text-sm md:text-base mb-1 md:mb-2"><strong>Total Paid:</strong> <span id="receipt-total-paid" class="font-bold text-purple-700 text-lg md:text-xl"></span></p>
+                </div>
+
+                <div class="mb-4 md:mb-6">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Buyer's Message</h3>
+                    <p id="receipt-buyer-message" class="text-gray-700 italic text-sm md:text-base"></p>
+                </div>
+
+                <button id="receipt-back-to-home-button" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 mt-2 md:mt-4 mx-auto block text-sm md:text-base">Back to Home</button>
+            </div>
+        </section>
+
+        <section id="purchases-transactions-content" class="content-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-6xl mx-auto">
+            <div class="container">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6 text-center">All Purchases & Transactions</h2>
+                <div id="transactions-container" class="space-y-4 md:space-y-6">
+                    </div>
+                <p id="no-transactions-message" class="text-center text-gray-500 mt-4 md:mt-8 hidden text-sm md:text-base">No transactions recorded yet.</p>
+            </div>
+        </section>
+
+        <section id="settings-content" class="content-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-4xl mx-auto">
+            <div class="container">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6 text-center">Settings</h2>
+                <div class="flex flex-col items-center space-y-2 md:space-y-4">
+                    <button id="manage-items-button" class="bg-purple-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 w-full md:w-auto text-sm md:text-base">Manage My Uploaded Items</button>
+                    </div>
+            </div>
+        </section>
+
+        <section id="manage-items-content" class="content-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-6xl mx-auto">
+            <div class="container">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6 text-center">Manage Your Uploaded Items</h2>
+                <div id="my-uploaded-items-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 md:mt-8">
+                    </div>
+                <p id="no-uploaded-items-message" class="text-center text-gray-500 mt-4 md:mt-8 hidden text-sm md:text-base">You haven't uploaded any items yet.</p>
+            </div>
+        </section>
+
+        <section id="contact-content" class="content-section contact-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-6xl mx-auto px-4 py-8">
+            <div class="container">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6 text-center">Contact Us</h2>
+                <p class="text-center text-gray-600 mb-4 md:mb-6 text-sm md:text-base">Have questions or need assistance? Reach out to us!</p>
+
+                <div class="flex flex-col md:flex-row justify-center gap-4 md:gap-8 mb-4 md:mb-8">
+                    <div class="text-center">
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Email Us</h3>
+                        <p class="text-gray-700 text-sm md:text-base">jeromeurbano41@gmail.com</p>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Message Us on Facebook</h3>
+                        <a href="https://www.facebook.com/messages/e2ee/t/7913619312035832/
+" target="_blank" class="text-blue-600 hover:underline text-sm md:text-base">
+                            <span class="font-semibold">Gynalyn Urbano</span> <a href="https://www.facebook.com/messages/e2ee/t/7913619312035832/
+">(Facebook Messenger)</a> 
+                        </a>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Our Location</h3>
+                        <p class="text-gray-700 text-sm md:text-base">Dapawan, Odiongan, Romblon, Philippines</p>
+                    </div>
+                </div>
+
+                <form class="contact-form grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div class="form-group flex flex-col">
+                        <label for="name" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Your Name</label>
+                        <input type="text" id="name" name="name" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col">
+                        <label for="email" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Your Email</label>
+                        <input type="email" id="email" name="email" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col md:col-span-2">
+                        <label for="subject" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Subject</label>
+                        <input type="text" id="subject" name="subject" class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full text-sm md:text-base">
+                    </div>
+                    <div class="form-group flex flex-col md:col-span-2">
+                        <label for="message" class="text-gray-700 font-semibold mb-1 text-sm md:text-base">Message</label>
+                        <textarea id="message" name="message" rows="5" required class="border border-gray-300 rounded-lg p-2 md:p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full resize-y text-sm md:text-base"></textarea>
+                    </div>
+                    <button type="submit" class="submit-button md:col-span-2 bg-green-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 mt-2 md:mt-4 mx-auto block text-sm md:text-base">Send</button>
+                </form>
+                <div class="gur-mission text-center mt-6 md:mt-10 text-base md:text-lg font-medium text-gray-600 p-4 md:p-6 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+                    <p>OUR MISSION: To provide the best content and experience for our users.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="latest-content" class="content-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-6xl mx-auto px-4 py-8 text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6">Latest Content</h2>
+            <p class="text-gray-600 text-sm md:text-base">Check back soon for the newest updates and additions!</p>
+            <div id="latest-items-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4 md:mt-8">
+                </div>
+        </section>
+
+        <section id="requests-content" class="content-section bg-white shadow-md rounded-xl p-4 md:p-8 my-4 md:my-8 max-w-6xl mx-auto px-4 py-8 text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6">Your Requests</h2>
+            <p class="text-gray-600 mb-2 md:mb-4 text-sm md:text-base">Have a specific request? Let us know!</p>
+            <form class="max-w-xl mx-auto space-y-2 md:space-y-4">
+                <input type="text" placeholder="Your Request Title" class="w-full py-2 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm md:text-base">
+                <textarea placeholder="Describe your request in detail..." rows="4" class="w-full py-2 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-y text-sm md:text-base"></textarea>
+                <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 text-sm md:text-base">Submit Request</button>
+            </form>
+        </section>
+
+    </main>
+
+    <script type="module">
+        // Global variables
+        let furnitureItems = [];
+        let currentDetailedItem = null;
+        let userId = 'localUser'; // A fixed ID for local storage, as there's no Firebase auth
+
+        // DOM elements (declared globally for easier access after initialization)
+        let loadingOverlay, messageBox, homeItemsContainer, latestItemsContainer, itemDetailsContent, checkoutContent, receiptContent, purchasesTransactionsContent, transactionsContainer, noTransactionsMessage;
+        let detailItemName, detailItemImage, detailItemPrice, detailItemDescription, detailItemCategory, detailItemDate, detailItemPaymentMethod, detailItemTimesSold, detailItemRating;
+        let checkoutItemImage, checkoutItemName, checkoutItemPrice, checkoutForm, confirmPurchaseButton, backToDetailsButton, streetAddressInput, cityInput, stateProvinceInput, zipCodeInput, buyerMessageInput;
+        let receiptTransactionId, receiptDate, receiptItemImage, receiptItemName, receiptItemPrice, receiptItemCategory, receiptStreetAddress, receiptCityStateZip, receiptPaymentMethod, receiptTotalPaid, receiptBuyerMessage, receiptBackToHomeButton;
+        let contactForm, navLinks, categoryLinks, contentSections, browseButton, searchInput, uploadFurnitureButton, uploadItemHomeButton, backToHomeButton, buyNowButton, homeSectionTitle;
+        let manageItemsContent, myUploadedItemsContainer, noUploadedItemsMessage, settingsContent, manageItemsButton;
+
+        /**
+         * Shows the loading overlay.
+         */
+        const showLoadingOverlay = () => {
+            if (loadingOverlay) loadingOverlay.style.display = 'flex';
+        };
+
+        /**
+         * Hides the loading overlay.
+         */
+        const hideLoadingOverlay = () => {
+            if (loadingOverlay) {
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 100); // Small delay for smooth transition
+            }
+        };
+
+        /**
+         * Loads furniture items from Local Storage.
+         */
+        const loadFurnitureItems = () => {
+            try {
+                const storedItems = localStorage.getItem('gorfFurnitureItems');
+                if (storedItems) {
+                    // Parse stored JSON and convert date strings back to Date objects
+                    furnitureItems = JSON.parse(storedItems).map(item => ({
+                        ...item,
+                        dateAdded: new Date(item.dateAdded),
+                        purchaseHistory: item.purchaseHistory.map(ph => ({
+                            ...ph,
+                            purchaseDate: new Date(ph.purchaseDate)
+                        }))
+                    }));
+                    console.log("Furniture items loaded from Local Storage:", furnitureItems);
+                } else {
+                    console.log("No furniture items found in Local Storage. Initializing with empty array.");
+                    furnitureItems = [];
+                }
+            } catch (e) {
+                console.error("Error loading furniture items from Local Storage:", e);
+                showMessage("Error loading data. Starting with no items.", 'error');
+                furnitureItems = []; // Ensure it's empty on error
+            }
+        };
+
+        /**
+         * Saves the current furniture items array to Local Storage.
+         */
+        const saveFurnitureItems = () => {
+            try {
+                // Convert Date objects to ISO strings for JSON stringification
+                const itemsToSave = furnitureItems.map(item => ({
+                    ...item,
+                    dateAdded: item.dateAdded.toISOString(),
+                    purchaseHistory: item.purchaseHistory.map(ph => ({
+                        ...ph,
+                        purchaseDate: ph.purchaseDate.toISOString()
+                    }))
+                }));
+                localStorage.setItem('gorfFurnitureItems', JSON.stringify(itemsToSave));
+                console.log("Furniture items saved to Local Storage.");
+            } catch (e) {
+                console.error("Error saving furniture items to Local Storage:", e);
+                showMessage("Error saving data.", 'error');
+            }
+        };
+
+        /**
+         * Renders all dynamic content sections.
+         */
+        const renderAllContent = () => {
+            console.log("Rendering all content");
+            renderHomeContent();
+            renderLatestContent();
+            renderPurchasesAndTransactions();
+            renderManageItemsContent();
+            // Ensure the currently active section is shown after re-rendering
+            const activeSection = document.querySelector('.content-section.active');
+            const activeSectionId = activeSection ? activeSection.id : 'home-content';
+            showSection(activeSectionId);
+            console.log("Hiding loading overlay");
+            hideLoadingOverlay();
+        };
+
+        /**
+         * Generates a simple unique transaction ID.
+         * @returns {string} - A unique transaction ID.
+         */
+        const generateTransactionId = () => {
+            return 'TRX-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        };
+
+        /**
+         * Calculates the average rating for an item.
+         * @param {Array<number>} ratings - An array of ratings for the item.
+         * @returns {string} - The average rating formatted (e.g., "4.5/5") or "No ratings".
+         */
+        const calculateAverageRating = (ratings) => {
+            if (!ratings || ratings.length === 0) {
+                return "No ratings yet";
+            }
+            const sum = ratings.reduce((acc, curr) => acc + curr, 0);
+            const average = sum / ratings.length;
+            return `${average.toFixed(1)}/5 (${ratings.length} reviews)`;
+        };
+
+        /**
+         * Displays a temporary message to the user.
+         * @param {string} message - The message to display.
+         * @param {string} type - 'success' or 'error' (determines background color).
+         */
+        const showMessage = (message, type = 'success') => {
+            if (!messageBox) return;
+            messageBox.textContent = message;
+            messageBox.className = 'message-box show';
+            if (type === 'success') {
+                messageBox.style.backgroundColor = '#4CAF50';
+            } else if (type === 'error') {
+                messageBox.style.backgroundColor = '#f44336';
+            } else {
+                messageBox.style.backgroundColor = '#2196F3';
+            }
+
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000);
+        };
+
+        /**
+         * Creates an HTML card element for a furniture item.
+         * @param {object} item - The furniture item object.
+         * @param {number} index - The index of the item in the furnitureItems array.
+         * @param {boolean} showDeleteButton - Whether to show the delete button on the card.
+         * @returns {string} - HTML string for the item card.
+         */
+        const createItemCard = (item, index, showDeleteButton = false) => {
+            const date = item.dateAdded ? new Date(item.dateAdded).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
+            const averageRating = calculateAverageRating(item.ratings);
+            return `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover" loading="lazy">
+                    <div class="p-4">
+                        <h4 class="font-bold text-lg text-gray-800">${item.name}</h4>
+                        <p class="text-gray-600 text-sm mt-1">${item.description.substring(0, 70)}...</p>
+                        <p class="text-purple-700 font-bold text-xl mt-2">$${item.price.toFixed(2)}</p>
+                        <p class="text-gray-500 text-xs mt-1">Added: ${date}</p>
+                        <p class="text-gray-700 text-sm mt-1">Sold: ${item.timesSold || 0}</p>
+                        <p class="text-gray-700 text-sm mt-1">Rating: ${averageRating}</p>
+                        <button class="mt-4 bg-purple-500 text-white px-4 py-2 rounded-full text-sm hover:bg-purple-600 transition-colors w-full view-details-button" data-item-index="${index}">View Details</button>
+                        ${showDeleteButton ? `<button class="mt-2 bg-red-600 text-white px-4 py-2 rounded-full text-sm hover:bg-red-700 transition-colors w-full delete-item-card-button" data-item-id="${item.id}" data-creator-id="${item.creatorId}">Delete</button>` : ''}
+                    </div>
+                </div>
+            `;
+        };
+
+        /**
+         * Renders a list of items into a specified container.
+         * @param {HTMLElement} container - The HTML element to render items into.
+         * @param {Array} items - An array of item objects to display.
+         * @param {boolean} showDeleteButton - Whether to show the delete button on the card.
+         */
+        const renderItems = (container, items, showDeleteButton = false) => {
+            if (!container) return;
+            container.innerHTML = '';
+            if (items.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 col-span-full">No items to display yet.</p>';
+                return;
+            }
+            items.forEach((item, index) => {
+                container.innerHTML += createItemCard(item, index, showDeleteButton);
+            });
+            addDetailsButtonListeners(container);
+            if (showDeleteButton) {
+                addDeleteButtonListeners(container);
+            }
+        };
+
+        /**
+         * Renders items for the Home content section based on a filter.
+         * @param {string} category - The category to filter by, or 'all' for all items.
+         * @param {string} searchQuery - The search query to filter by.
+         */
+        const renderHomeContent = (category = 'all', searchQuery = '') => {
+            let itemsToRender = furnitureItems;
+            let titleText = 'Recently added';
+
+            if (category !== 'all') {
+                itemsToRender = itemsToRender.filter(item => item.category === category);
+                titleText = `Items in ${category.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`;
+            }
+
+            if (searchQuery) {
+                const lowerCaseQuery = searchQuery.toLowerCase();
+                itemsToRender = itemsToRender.filter(item =>
+                    item.name.toLowerCase().includes(lowerCaseQuery) ||
+                    item.description.toLowerCase().includes(lowerCaseQuery)
+                );
+                titleText = `Search Results for "${searchQuery}"`;
+            }
+
+            if (homeSectionTitle) homeSectionTitle.textContent = titleText;
+            renderItems(homeItemsContainer, itemsToRender);
+        };
+
+        /**
+         * Renders items for the Latest content section.
+         */
+        const renderLatestContent = () => {
+            const sortedLatestItems = [...furnitureItems].sort((a, b) => b.dateAdded.getTime() - a.dateAdded.getTime());
+            renderItems(latestItemsContainer, sortedLatestItems);
+        };
+
+        /**
+         * Renders items for the new Manage Items content section.
+         */
+        const renderManageItemsContent = () => {
+            if (!myUploadedItemsContainer) return;
+
+            const userUploadedItems = furnitureItems.filter(item => item.creatorId === userId);
+
+            if (userUploadedItems.length === 0) {
+                myUploadedItemsContainer.innerHTML = '';
+                if (noUploadedItemsMessage) noUploadedItemsMessage.classList.remove('hidden');
+            } else {
+                if (noUploadedItemsMessage) noUploadedItemsMessage.classList.add('hidden');
+                renderItems(myUploadedItemsContainer, userUploadedItems, true);
+            }
+        };
+
+
+        /**
+         * Populates the item details section with data from a specific item.
+         * @param {object} item - The furniture item object to display.
+         */
+        const displayItemDetails = (item) => {
+            currentDetailedItem = item;
+            if (detailItemName) detailItemName.textContent = item.name;
+            if (detailItemImage) {
+                detailItemImage.src = item.image;
+                detailItemImage.alt = item.name;
+            }
+            if (detailItemPrice) detailItemPrice.textContent = `$${item.price.toFixed(2)}`;
+            if (detailItemDescription) detailItemDescription.textContent = item.description;
+            if (detailItemCategory) detailItemCategory.textContent = item.category.replace(/-/g, ' ');
+            if (detailItemDate) detailItemDate.textContent = item.dateAdded ? new Date(item.dateAdded).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
+            if (detailItemPaymentMethod) detailItemPaymentMethod.textContent = item.paymentMethod ? item.paymentMethod.replace(/-/g, ' ') : 'Not specified';
+            if (detailItemTimesSold) detailItemTimesSold.textContent = item.timesSold || 0;
+            if (detailItemRating) detailItemRating.textContent = calculateAverageRating(item.ratings);
+            showSection('item-details-content');
+        };
+
+        /**
+         * Populates the receipt section with purchase details.
+         * @param {object} purchaseDetails - Details of the completed purchase.
+         */
+        const displayReceipt = (purchaseDetails) => {
+            if (receiptTransactionId) receiptTransactionId.textContent = purchaseDetails.transactionId;
+            if (receiptDate) receiptDate.textContent = new Date(purchaseDetails.purchaseDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+            if (receiptItemImage) receiptItemImage.src = purchaseDetails.item.image;
+            if (receiptItemName) receiptItemName.textContent = purchaseDetails.item.name;
+            if (receiptItemPrice) receiptItemPrice.textContent = `$${purchaseDetails.item.price.toFixed(2)}`;
+            if (receiptItemCategory) receiptItemCategory.textContent = purchaseDetails.item.category.replace(/-/g, ' ');
+            if (receiptStreetAddress) receiptStreetAddress.textContent = purchaseDetails.buyerAddress.streetAddress;
+            if (receiptCityStateZip) receiptCityStateZip.textContent = `${purchaseDetails.buyerAddress.city}, ${purchaseDetails.buyerAddress.stateProvince} ${purchaseDetails.buyerAddress.zipCode}`;
+            if (receiptPaymentMethod) receiptPaymentMethod.textContent = purchaseDetails.paymentMethod.replace(/-/g, ' ');
+            if (receiptTotalPaid) receiptTotalPaid.textContent = `$${purchaseDetails.item.price.toFixed(2)}`;
+            if (receiptBuyerMessage) receiptBuyerMessage.textContent = purchaseDetails.buyerMessage || 'No message provided.';
+
+            showSection('receipt-content');
+        };
+
+        /**
+         * Renders all purchase transactions in the "Purchases & Transactions" section.
+         */
+        const renderPurchasesAndTransactions = () => {
+            if (!transactionsContainer) return;
+            transactionsContainer.innerHTML = '';
+            let allTransactions = [];
+
+            furnitureItems.forEach(item => {
+                if (item.purchaseHistory && item.purchaseHistory.length > 0) {
+                    item.purchaseHistory.forEach(purchase => {
+                        allTransactions.push({ ...purchase, fullItem: item });
+                    });
+                }
+            });
+
+            if (allTransactions.length === 0) {
+                if (noTransactionsMessage) noTransactionsMessage.classList.remove('hidden');
+                return;
+            } else {
+                if (noTransactionsMessage) noTransactionsMessage.classList.add('hidden');
+            }
+
+            allTransactions.sort((a, b) => b.purchaseDate.getTime() - a.purchaseDate.getTime());
+
+            allTransactions.forEach((transaction, index) => {
+                const transactionCard = `
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 cursor-pointer transaction-card" data-transaction-index="${index}">
+                        <p class="font-bold text-lg text-gray-800 mb-2">Transaction ID: <span class="text-purple-600">${transaction.transactionId}</span></p>
+                        <p class="text-gray-700 text-sm mb-1">Date: ${new Date(transaction.purchaseDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                        <div class="flex items-center gap-4 mt-3 mb-2">
+                            <img src="${transaction.item.image}" alt="${transaction.item.name}" class="w-16 h-16 object-cover rounded-md" loading="lazy">
+                            <div>
+                                <p class="font-semibold text-gray-800">${transaction.item.name}</p>
+                                <p class="text-purple-700 font-bold text-md">$${transaction.item.price.toFixed(2)}`;
+                                if (!transaction.rated) {
+                                    transactionCard += `<button class="mt-2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs hover:bg-blue-600 rate-item-button" data-item-id="${transaction.item.id}" data-transaction-id="${transaction.transactionId}">Rate Item</button>`;
+                                }
+                                transactionCard += `</div>
+                        </div>
+                        <p class="text-gray-700 text-sm mb-1">Payment Method: <span class="capitalize">${transaction.paymentMethod.replace(/-/g, ' ')}</span></p>
+                        <p class="text-gray-700 text-sm">Buyer's Message: <span class="italic">${transaction.buyerMessage || 'N/A'}</span></p>
+                        <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-full text-sm hover:bg-blue-600 transition-colors view-receipt-button" data-transaction-index="${index}">View Receipt</button>
+                    </div>
+                `;
+                transactionsContainer.innerHTML += transactionCard;
+            });
+
+            addTransactionCardListeners(allTransactions);
+            addRateItemButtonListeners();
+        };
+
+        /**
+         * Adds click listeners to all "View Receipt" buttons or transaction cards.
+         * @param {Array} allTransactions - The array of all transactions currently displayed.
+         */
+        const addTransactionCardListeners = (allTransactions) => {
+            if (!transactionsContainer) return;
+            transactionsContainer.querySelectorAll('.transaction-card').forEach(card => {
+                card.onclick = (event) => {
+                    const targetButton = event.target.closest('.view-receipt-button');
+                    if (targetButton) {
+                        const index = targetButton.dataset.transactionIndex;
+                        if (index !== undefined && allTransactions[index]) {
+                            displayReceipt(allTransactions[index]);
+                        }
+                    } else if (event.target.closest('.transaction-card')) {
+                            const index = event.target.closest('.transaction-card').dataset.transactionIndex;
+                            if (index !== undefined && allTransactions[index]) {
+                                displayReceipt(allTransactions[index]);
+                            }
+                    }
+                };
+            });
+        };
+
+        /**
+         * Adds click listeners to all "Rate Item" buttons.
+         */
+        const addRateItemButtonListeners = () => {
+            if (!transactionsContainer) return;
+            transactionsContainer.querySelectorAll('.rate-item-button').forEach(button => {
+                button.onclick = async (event) => {
+                    event.stopPropagation();
+                    const itemId = event.target.dataset.itemId;
+                    const transactionId = event.target.dataset.transactionId;
+
+                    const itemIndex = furnitureItems.findIndex(item => item.id === itemId);
+                    if (itemIndex === -1) {
+                        showMessage('Item not found for rating.', 'error');
+                        return;
+                    }
+
+                    const item = furnitureItems[itemIndex];
+                    const rating = prompt(`How would you rate "${item.name}" (1-5 stars)?`);
+
+                    if (rating && !isNaN(rating) && parseInt(rating) >= 1 && parseInt(rating) <= 5) {
+                        item.ratings.push(parseInt(rating));
+
+                        const purchaseIndex = item.purchaseHistory.findIndex(p => p.transactionId === transactionId);
+                        if (purchaseIndex !== -1) {
+                            item.purchaseHistory[purchaseIndex].rated = true;
+                        }
+
+                        saveFurnitureItems();
+                        showMessage('Thank you for your rating!', 'success');
+                        renderPurchasesAndTransactions();
+                        renderHomeContent();
+                        renderLatestContent();
+                    } else if (rating !== null) {
+                        showMessage('Invalid rating. Please enter a number between 1 and 5.', 'error');
+                    }
+                };
+            });
+        };
+
+
+        /**
+         * Adds click listeners to all "View Details" buttons within a given container.
+         * @param {HTMLElement} container - The parent container to listen for clicks on.
+         */
+        const addDetailsButtonListeners = (container) => {
+            if (!container) return;
+            container.querySelectorAll('.view-details-button').forEach(button => {
+                button.onclick = (event) => {
+                    const index = event.target.dataset.itemIndex;
+                    if (index !== undefined && furnitureItems[index]) {
+                        displayItemDetails(furnitureItems[index]);
+                    }
+                };
+            });
+        };
+
+        /**
+         * Adds click listeners to all "Delete" buttons within a given container (for manage items section).
+         * @param {HTMLElement} container - The parent container to listen for clicks on.
+         */
+        const addDeleteButtonListeners = (container) => {
+            if (!container) return;
+            container.querySelectorAll('.delete-item-card-button').forEach(button => {
+                button.onclick = async (event) => {
+                    const itemId = event.target.dataset.itemId;
+                    const itemCreatorId = event.target.dataset.creatorId;
+                    if (itemId && itemCreatorId) {
+                        await deleteItem(itemId, itemCreatorId);
+                    } else {
+                        showMessage('Error: Item ID or creator ID missing for deletion.', 'error');
+                    }
+                };
+            });
+        };
+
+
+        /**
+         * Hides all content sections.
+         */
+        const hideAllSections = () => {
+            if (!contentSections) return;
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+        };
+
+        /**
+         * Shows a specific content section based on its ID.
+         * @param {string} sectionId - The ID of the section to show.
+         */
+        const showSection = (sectionId) => {
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                hideAllSections();
+                targetSection.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
+
+        /**
+         * Deletes an item from the furnitureItems array and updates Local Storage.
+         * @param {string} itemId - The ID of the item to delete.
+         * @param {string} itemCreatorId - The creatorId of the item to delete.
+         */
+        const deleteItem = async (itemId, itemCreatorId) => {
+            if (itemCreatorId !== userId) { // Check against local user ID
+                showMessage('You are not authorized to delete this item. Only the creator can delete it.', 'error');
+                return;
+            }
+
+            const initialLength = furnitureItems.length;
+            furnitureItems = furnitureItems.filter(item => item.id !== itemId);
+
+            if (furnitureItems.length < initialLength) {
+                saveFurnitureItems();
+                showMessage('Item deleted successfully!', 'success');
+                showSection('manage-items-content');
+                renderManageItemsContent();
+                renderHomeContent();
+                renderLatestContent();
+                renderPurchasesAndTransactions();
+            } else {
+                showMessage('Item not found or could not be deleted.', 'error');
+            }
+        };
+
+        // Main initialization logic
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize global DOM elements
+            loadingOverlay = document.getElementById('loading-overlay');
+            messageBox = document.getElementById('message-box');
+            navLinks = document.querySelectorAll('.nav-link');
+            categoryLinks = document.querySelectorAll('.category-link');
+            contentSections = document.querySelectorAll('.content-section');
+            browseButton = document.getElementById('browse-button');
+            searchInput = document.getElementById('search-input');
+            uploadFurnitureButton = document.getElementById('upload-furniture-button');
+            uploadItemHomeButton = document.getElementById('upload-item-home-button');
+            backToHomeButton = document.getElementById('back-to-home-button');
+            buyNowButton = document.getElementById('buy-now-button');
+            homeSectionTitle = document.getElementById('home-section-title');
+
+            homeItemsContainer = document.getElementById('home-items-container');
+            latestItemsContainer = document.getElementById('latest-items-container');
+            itemDetailsContent = document.getElementById('item-details-content');
+            checkoutContent = document.getElementById('checkout-content');
+            receiptContent = document.getElementById('receipt-content');
+            purchasesTransactionsContent = document.getElementById('purchases-transactions-content');
+            transactionsContainer = document.getElementById('transactions-container');
+            noTransactionsMessage = document.getElementById('no-transactions-message');
+
+            settingsContent = document.getElementById('settings-content');
+            manageItemsButton = document.getElementById('manage-items-button');
+            manageItemsContent = document.getElementById('manage-items-content');
+            myUploadedItemsContainer = document.getElementById('my-uploaded-items-container');
+            noUploadedItemsMessage = document.getElementById('no-uploaded-items-message');
+
+            detailItemName = document.getElementById('detail-item-name');
+            detailItemImage = document.getElementById('detail-item-image');
+            detailItemPrice = document.getElementById('detail-item-price');
+            detailItemDescription = document.getElementById('detail-item-description');
+            detailItemCategory = document.getElementById('detail-item-category');
+            detailItemDate = document.getElementById('detail-item-date');
+            detailItemPaymentMethod = document.getElementById('detail-item-payment-method');
+            detailItemTimesSold = document.getElementById('detail-item-times-sold');
+            detailItemRating = document.getElementById('detail-item-rating');
+
+            checkoutItemImage = document.getElementById('checkout-item-image');
+            checkoutItemName = document.getElementById('checkout-item-name');
+            checkoutItemPrice = document.getElementById('checkout-item-price');
+            checkoutForm = document.getElementById('checkout-form');
+            confirmPurchaseButton = document.getElementById('confirm-purchase-button');
+            backToDetailsButton = document.getElementById('back-to-details-button');
+            streetAddressInput = document.getElementById('street-address');
+            cityInput = document.getElementById('city');
+            stateProvinceInput = document.getElementById('state-province');
+            zipCodeInput = document.getElementById('zip-code');
+            buyerMessageInput = document.getElementById('buyer-message');
+
+            receiptTransactionId = document.getElementById('receipt-transaction-id');
+            receiptDate = document.getElementById('receipt-date');
+            receiptItemImage = document.getElementById('receipt-item-image');
+            receiptItemName = document.getElementById('receipt-item-name');
+            receiptItemPrice = document.getElementById('receipt-item-price');
+            receiptItemCategory = document.getElementById('receipt-item-category');
+            receiptStreetAddress = document.getElementById('receipt-street-address');
+            receiptCityStateZip = document.getElementById('receipt-city-state-zip');
+            receiptPaymentMethod = document.getElementById('receipt-payment-method');
+            receiptTotalPaid = document.getElementById('receipt-total-paid');
+            receiptBuyerMessage = document.getElementById('receipt-buyer-message');
+            receiptBackToHomeButton = document.getElementById('receipt-back-to-home-button');
+
+            contactForm = document.querySelector('.contact-form');
+
+            // Load data and render content
+            loadFurnitureItems();
+            renderAllContent();
+
+            // Event Listeners
+            navLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetId = event.target.dataset.target;
+                    if (targetId) {
+                        showSection(targetId);
+                        if (targetId === 'home-content') renderHomeContent();
+                        else if (targetId === 'latest-content') renderLatestContent();
+                        else if (targetId === 'purchases-transactions-content') renderPurchasesAndTransactions();
+                        else if (targetId === 'manage-items-content') renderManageItemsContent();
+                    }
+                });
+            });
+
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const category = event.target.dataset.category;
+                    if (category) {
+                        if(searchInput) searchInput.value = '';
+                        renderHomeContent(category);
+                        showSection('home-content');
+                    }
+                });
+            });
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (event) => {
+                    const query = event.target.value;
+                    renderHomeContent('all', query);
+                    showSection('home-content');
+                });
+            }
+
+            if (browseButton) {
+                browseButton.addEventListener('click', () => {
+                    if(searchInput) searchInput.value = '';
+                    renderHomeContent();
+                    showSection('home-content');
+                });
+            }
+
+            if (uploadItemHomeButton) {
+                uploadItemHomeButton.addEventListener('click', () => {
+                    showSection('upload-furniture-content');
+                });
+            }
+
+            if (backToHomeButton) {
+                backToHomeButton.addEventListener('click', () => {
+                    showSection('home-content');
+                    renderHomeContent();
+                });
+            }
+
+            if (buyNowButton) {
+                buyNowButton.addEventListener('click', () => {
+                    if (currentDetailedItem) {
+                        if(checkoutItemImage) checkoutItemImage.src = currentDetailedItem.image;
+                        if(checkoutItemName) checkoutItemName.textContent = currentDetailedItem.name;
+                        if(checkoutItemPrice) checkoutItemPrice.textContent = `$${currentDetailedItem.price.toFixed(2)}`;
+                        const defaultPaymentRadio = document.querySelector('input[name="checkout-payment-method"][value="' + currentDetailedItem.paymentMethod + '"]');
+                        if (defaultPaymentRadio) {
+                            defaultPaymentRadio.checked = true;
+                        } else {
+                            document.querySelector('input[name="checkout-payment-method"][value="credit-card"]').checked = true;
+                        }
+                        if(streetAddressInput) streetAddressInput.value = '';
+                        if(cityInput) cityInput.value = '';
+                        if(stateProvinceInput) stateProvinceInput.value = '';
+                        if(zipCodeInput) zipCodeInput.value = '';
+                        if(buyerMessageInput) buyerMessageInput.value = '';
+                        showSection('checkout-content');
+                    } else {
+                        showMessage('No item selected for purchase.', 'error');
+                    }
+                });
+            }
+
+            if (manageItemsButton) {
+                manageItemsButton.addEventListener('click', () => {
+                    showSection('manage-items-content');
+                    renderManageItemsContent();
+                });
+            }
+
+            if (backToDetailsButton) {
+                backToDetailsButton.addEventListener('click', () => {
+                    if (currentDetailedItem) {
+                        displayItemDetails(currentDetailedItem);
+                    } else {
+                        showSection('home-content');
+                        renderHomeContent();
+                    }
+                });
+            }
+
+            if (receiptBackToHomeButton) {
+                receiptBackToHomeButton.addEventListener('click', () => {
+                    showSection('home-content');
+                    renderHomeContent();
+                });
+            }
+
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const selectedPaymentMethod = document.querySelector('input[name="checkout-payment-method"]:checked')?.value;
+                    const streetAddress = streetAddressInput ? streetAddressInput.value.trim() : '';
+                    const city = cityInput ? cityInput.value.trim() : '';
+                    const stateProvince = stateProvinceInput ? stateProvinceInput.value.trim() : '';
+                    const zipCode = zipCodeInput ? zipCodeInput.value.trim() : '';
+                    const buyerMessage = buyerMessageInput ? buyerMessageInput.value.trim() : '';
+                    const notificationEmail = "jeromeurbano41@gmail.com";
+
+                    if (!streetAddress || !city || !zipCode) {
+                        showMessage('Please fill in all required address fields (Street, City, Zip Code).', 'error');
+                        return;
+                    }
+                    if (!selectedPaymentMethod) {
+                        showMessage('Please select a payment method.', 'error');
+                        return;
+                    }
+
+                    if (currentDetailedItem) {
+                        const transactionId = generateTransactionId();
+                        const purchaseDate = new Date();
+
+                        const itemIndex = furnitureItems.findIndex(item => item.id === currentDetailedItem.id);
+                        if (itemIndex !== -1) {
+                            furnitureItems[itemIndex].timesSold = (furnitureItems[itemIndex].timesSold || 0) + 1;
+                            const newPurchase = {
+                                transactionId: transactionId,
+                                purchaseDate: purchaseDate,
+                                paymentMethod: selectedPaymentMethod,
+                                buyerMessage: buyerMessage,
+                                buyerEmail: notificationEmail,
+                                buyerAddress: {
+                                    streetAddress: streetAddress,
+                                    city: city,
+                                    stateProvince: stateProvince,
+                                    zipCode: zipCode
+                                },
+                                item: {
+                                    id: currentDetailedItem.id,
+                                    name: currentDetailedItem.name,
+                                    price: currentDetailedItem.price,
+                                    image: currentDetailedItem.image,
+                                    category: currentDetailedItem.category
+                                },
+                                rated: false
+                            };
+                            furnitureItems[itemIndex].purchaseHistory.push(newPurchase);
+
+                            saveFurnitureItems();
+
+                            console.log(`Simulating email notification to ${notificationEmail} for purchase of "${currentDetailedItem.name}" (Transaction ID: ${transactionId}).`);
+                            console.log(`Buyer's message: ${buyerMessage}`);
+                            console.log(`Delivery Address: ${streetAddress}, ${city}, ${stateProvince} ${zipCode}`);
+                            showMessage(`Purchase confirmed! A receipt has been generated and a notification email has been simulated to ${notificationEmail}.`, 'success');
+
+                            const rating = prompt(`How would you rate "${currentDetailedItem.name}" (1-5 stars)?`);
+                            if (rating && !isNaN(rating) && parseInt(rating) >= 1 && parseInt(rating) <= 5) {
+                                furnitureItems[itemIndex].ratings.push(parseInt(rating));
+                                newPurchase.rated = true;
+                                showMessage('Thank you for your rating!', 'success');
+                                saveFurnitureItems();
+                            } else if (rating !== null) {
+                                showMessage('Invalid rating. Please enter a number between 1 and 5.', 'error');
+                            }
+                        }
+
+                        const purchaseDetails = {
+                            transactionId: transactionId,
+                            purchaseDate: purchaseDate,
+                            item: currentDetailedItem,
+                            paymentMethod: selectedPaymentMethod,
+                            buyerMessage: buyerMessage,
+                            buyerAddress: {
+                                streetAddress: streetAddress,
+                                city: city,
+                                stateProvince: stateProvince,
+                                zipCode: zipCode
+                            }
+                        };
+                        displayReceipt(purchaseDetails);
+
+                        renderHomeContent();
+                        renderLatestContent();
+                        renderPurchasesAndTransactions();
+                        renderManageItemsContent();
+
+                    } else {
+                        showMessage('Error: No item selected for checkout.', 'error');
+                    }
+                });
+            }
+
+            const uploadFurnitureForm = document.getElementById('upload-furniture-form');
+            if (uploadFurnitureForm) {
+                uploadFurnitureForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const imageFile = document.getElementById('furniture-image').files[0];
+                    const reader = new FileReader();
+
+                    reader.onloadend = () => {
+                        const formData = new FormData(event.target);
+                        const newFurniture = {
+                            id: crypto.randomUUID(),
+                            name: formData.get('furniture-name'),
+                            description: formData.get('furniture-description') || 'No description provided.',
+                            price: parseFloat(formData.get('furniture-price')),
+                            category: formData.get('furniture-category'),
+                            image: reader.result,
+                            dateAdded: new Date(),
+                            paymentMethod: formData.get('payment-method'),
+                            timesSold: 0,
+                            ratings: [],
+                            purchaseHistory: [],
+                            creatorId: userId
+                        };
+
+                        furnitureItems.unshift(newFurniture);
+
+                        console.log('New furniture uploaded:', newFurniture);
+                        event.target.reset();
+
+                        saveFurnitureItems();
+
+                        renderHomeContent();
+                        renderLatestContent();
+                        renderPurchasesAndTransactions();
+                        renderManageItemsContent();
+
+                        showSection('latest-content');
+                        showMessage('Your furniture has been uploaded successfully!', 'success');
+                    };
+
+                    if (imageFile) {
+                        reader.readAsDataURL(imageFile);
+                    } else {
+                        const formData = new FormData(event.target);
+                        const newFurniture = {
+                            id: crypto.randomUUID(),
+                            name: formData.get('furniture-name'),
+                            description: formData.get('furniture-description') || 'No description provided.',
+                            price: parseFloat(formData.get('furniture-price')),
+                            category: formData.get('furniture-category'),
+                            image: "https://placehold.co/400x300/C5CAE9/3F51B5?text=No+Image",
+                            dateAdded: new Date(),
+                            paymentMethod: formData.get('payment-method'),
+                            timesSold: 0,
+                            ratings: [],
+                            purchaseHistory: [],
+                            creatorId: userId
+                        };
+                        furnitureItems.unshift(newFurniture);
+                        console.log('New furniture uploaded (no image file):', newFurniture);
+                        event.target.reset();
+                        saveFurnitureItems();
+                        renderHomeContent();
+                        renderLatestContent();
+                        renderPurchasesAndTransactions();
+                        renderManageItemsContent();
+                        showSection('latest-content');
+                        showMessage('Your furniture has been uploaded successfully (no image provided)!', 'success');
+                    }
+                });
+            }
+
+            if (contactForm) {
+                contactForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+
+                    const name = document.getElementById('name').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const subject = document.getElementById('subject').value.trim();
+                    const message = document.getElementById('message').trim();
+                    const recipientEmail = "jeromeurbano41@gmail.com";
+
+                    if (!name || !email || !subject || !message) {
+                        showMessage('Please fill in all required fields in the contact form.', 'error');
+                        return;
+                    }
+
+                    console.log(`Simulating contact message email to ${recipientEmail}:`);
+                    console.log(`From: ${name} <${email}>`);
+                    console.log(`Subject: ${subject}`);
+                    console.log(`Message: ${message}`);
+
+                    showMessage('Your message has been sent successfully! We will get back to you soon.', 'success');
+                    contactForm.reset();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
